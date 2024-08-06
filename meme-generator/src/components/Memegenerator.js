@@ -18,12 +18,11 @@ function MemeGenerator() {
   };
 
   const handleGenerateMeme = () => {
-    fetch('https://via.placeholder.com/150')
-      .then(res => res.blob())
+    toBlob(document.getElementById('meme'))
       .then((blob) => {
         const formData = new FormData();
         formData.append('image', blob);
-  
+
         return fetch('https://api.imgur.com/3/image', {
           method: 'POST',
           headers: {
@@ -108,5 +107,6 @@ function MemeGenerator() {
 }
 
 export default MemeGenerator;
+
 
 
