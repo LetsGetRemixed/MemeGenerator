@@ -34,5 +34,5 @@ jobs:
         working-directory: meme-generator/build
 
       - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MEME_GENERATOR_15198 }}
         working-directory: meme-generator
