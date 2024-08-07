@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toBlob, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
-import Footer from './Footer'
+import Footer from './Footer';
 
 function MemeGenerator() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -13,30 +13,17 @@ function MemeGenerator() {
   const [bottomFontSize, setBottomFontSize] = useState('text-2xl'); // Default font size for bottom text is medium
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result);
-      setIsImageLoaded(false); // Reset image load state
     };
     reader.readAsDataURL(file);
   };
-  
-  const handleImageLoad = () => {
-    setIsImageLoaded(true); // Set the image as loaded
-  };
 
   const handleGenerateMeme = () => {
-    if (!isImageLoaded) {
-      setError('Please wait for the image to load.');
-      return;
-    }
-  
-    toBlob(document.getElementById('meme'))
-      .then((blob) => {
     toBlob(document.getElementById('meme'))
       .then((blob) => {
         const formData = new FormData();
@@ -63,32 +50,37 @@ function MemeGenerator() {
       .catch((err) => {
         setError(`An error occurred: ${err.message}`);
       });
-    })
-    .catch((err) => {
-      setError(`An error occurred: ${err.message}`);
-    });
-};
+  };
 
-const handleDownloadMeme = () => {
-  toPng(document.getElementById('meme'))
-    .then((dataUrl) => {
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        // For mobile users
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'meme.png';
-        link.click();
+  const handleDownloadMeme = () => {
+    toPng(document.getElementById('meme'))
+      .then((dataUrl) => {
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+          // For mobile users
+          setSelectedImage(dataUrl); // Set the image preview to the generated image
+          setError('Long press the image below to save it to your camera roll.');
+        } else {
+          // For desktop users
+          saveAs(dataUrl, 'meme.png');
+        }
+      })
+      .catch((err) => {
+        setError(`An error occurred while downloading the image: ${err.message}`);
+      });
+  };
 
-        setError('Long press the image and choose "Save Image" to save to your camera roll.');
-      } else {
-        // For desktop users
-        saveAs(dataUrl, 'meme.png');
-      }
-    })
-    .catch((err) => {
-      setError(`An error occurred while downloading the image: ${err.message}`);
-    });
-};
+  const handleSaveToCameraRoll = () => {
+    toPng(document.getElementById('meme'))
+      .then((dataUrl) => {
+        // Open the image in a new tab
+        const newTab = window.open();
+        newTab.document.body.innerHTML = `<img src="${dataUrl}" style="width:100%; height:auto;" />`;
+        setError('Tap and hold the image in the new tab to save it to your camera roll.');
+      })
+      .catch((err) => {
+        setError(`An error occurred while generating the image: ${err.message}`);
+      });
+  };
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
@@ -125,7 +117,7 @@ const handleDownloadMeme = () => {
         />
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
-            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" onLoad={handleImageLoad} />
+            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
             <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize} ${getTextShadow()}`}>{topText}</p>
             <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize} ${getTextShadow()}`}>{bottomText}</p>
           </div>
@@ -207,10 +199,19 @@ const handleDownloadMeme = () => {
 
           <button 
             onClick={handleDownloadMeme} 
-            className="py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition duration-200"
+            className="py-2 mb-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition duration-200"
           >
             Download Meme
           </button>
+
+          { /Mobi|Android/i.test(navigator.userAgent) && (
+            <button 
+              onClick={handleSaveToCameraRoll} 
+              className="py-2 mt-2 bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-lg transition duration-200"
+            >
+              Save Image to Camera Roll
+            </button>
+          )}
         </div>
 
         {embedUrl && (
@@ -231,12 +232,13 @@ const handleDownloadMeme = () => {
           </div>
         )}
       </div>
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }
 
 export default MemeGenerator;
+
 
 
 
