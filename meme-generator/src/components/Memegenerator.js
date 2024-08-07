@@ -76,13 +76,16 @@ function MemeGenerator() {
   const handleSaveToCameraRoll = () => {
     toPng(document.getElementById('meme'))
       .then((dataUrl) => {
-        // Open the image in a new tab
         const newTab = window.open();
-        newTab.document.body.innerHTML = `<img src="${dataUrl}" style="width:100%; height:auto;" />`;
-        setError('Tap and hold the image in the new tab to save it to your camera roll.');
+        if (newTab) {
+          newTab.document.body.innerHTML = `<img src="${dataUrl}" style="width:100%; height:auto;" />`;
+          setError('Tap and hold the image in the new tab to save it to your camera roll.');
+        } else {
+          setError('Unable to open a new tab. Please check your browser settings.');
+        }
       })
       .catch((err) => {
-        setError(`An error occurred while generating the image: ${err.message}`);
+        setError(`An error occurred while generating the image: ${err.message || 'Unknown error'}`);
       });
   };
 
