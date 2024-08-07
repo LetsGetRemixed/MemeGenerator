@@ -14,6 +14,10 @@ function MemeGenerator() {
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
 
+  const isMobile = () => {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -55,7 +59,7 @@ function MemeGenerator() {
   const handleDownloadMeme = () => {
     toPng(document.getElementById('meme'))
       .then((dataUrl) => {
-        if (/Mobi|Android/i.test(navigator.userAgent)) {
+        if (isMobile()) {
           // For mobile users
           setSelectedImage(dataUrl); // Set the image preview to the generated image
           setError('Long press the image below to save it to your camera roll.');
@@ -204,7 +208,7 @@ function MemeGenerator() {
             Download Meme
           </button>
 
-          { /Mobi|Android/i.test(navigator.userAgent) && (
+          { isMobile() && (
             <button 
               onClick={handleSaveToCameraRoll} 
               className="py-2 mt-2 bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-lg transition duration-200"
@@ -238,6 +242,7 @@ function MemeGenerator() {
 }
 
 export default MemeGenerator;
+
 
 
 
