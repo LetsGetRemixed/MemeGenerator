@@ -72,13 +72,18 @@ function MemeGenerator() {
 const handleDownloadMeme = () => {
   toPng(document.getElementById('meme'))
     .then((dataUrl) => {
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = 'meme.png';
-      link.click();
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        // For mobile users
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'meme.png';
+        link.click();
 
-      // For mobile browsers, we can show a message or prompt
-      setError('Long press the image and choose "Save Image" to save to your camera roll.');
+        setError('Long press the image and choose "Save Image" to save to your camera roll.');
+      } else {
+        // For desktop users
+        saveAs(dataUrl, 'meme.png');
+      }
     })
     .catch((err) => {
       setError(`An error occurred while downloading the image: ${err.message}`);
