@@ -13,17 +13,30 @@ function MemeGenerator() {
   const [bottomFontSize, setBottomFontSize] = useState('text-2xl'); // Default font size for bottom text is medium
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result);
+      setIsImageLoaded(false); // Reset image load state
     };
     reader.readAsDataURL(file);
   };
+  
+  const handleImageLoad = () => {
+    setIsImageLoaded(true); // Set the image as loaded
+  };
 
   const handleGenerateMeme = () => {
+    if (!isImageLoaded) {
+      setError('Please wait for the image to load.');
+      return;
+    }
+  
+    toBlob(document.getElementById('meme'))
+      .then((blob) => {
     toBlob(document.getElementById('meme'))
       .then((blob) => {
         const formData = new FormData();
@@ -50,17 +63,27 @@ function MemeGenerator() {
       .catch((err) => {
         setError(`An error occurred: ${err.message}`);
       });
-  };
+    })
+    .catch((err) => {
+      setError(`An error occurred: ${err.message}`);
+    });
+};
 
-  const handleDownloadMeme = () => {
-    toPng(document.getElementById('meme'))
-      .then((dataUrl) => {
-        saveAs(dataUrl, 'meme.png');
-      })
-      .catch((err) => {
-        setError(`An error occurred while downloading the image: ${err.message}`);
-      });
-  };
+const handleDownloadMeme = () => {
+  toPng(document.getElementById('meme'))
+    .then((dataUrl) => {
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'meme.png';
+      link.click();
+
+      // For mobile browsers, we can show a message or prompt
+      setError('Long press the image and choose "Save Image" to save to your camera roll.');
+    })
+    .catch((err) => {
+      setError(`An error occurred while downloading the image: ${err.message}`);
+    });
+};
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
@@ -97,7 +120,7 @@ function MemeGenerator() {
         />
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
-            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
+            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" onLoad={handleImageLoad} />
             <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize} ${getTextShadow()}`}>{topText}</p>
             <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize} ${getTextShadow()}`}>{bottomText}</p>
           </div>
