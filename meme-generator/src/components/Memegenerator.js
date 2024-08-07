@@ -62,7 +62,7 @@ function MemeGenerator() {
         if (isMobile()) {
           // For mobile users
           setSelectedImage(dataUrl); // Set the image preview to the generated image
-          setError('Long press the image below to save it to your camera roll.');
+          setError('Long press the image above to save it to your camera roll.');
         } else {
           // For desktop users
           saveAs(dataUrl, 'meme.png');
@@ -73,21 +73,7 @@ function MemeGenerator() {
       });
   };
 
-  const handleSaveToCameraRoll = () => {
-    toPng(document.getElementById('meme'))
-      .then((dataUrl) => {
-        const newTab = window.open();
-        if (newTab) {
-          newTab.document.body.innerHTML = `<img src="${dataUrl}" style="width:100%; height:auto;" />`;
-          setError('Tap and hold the image in the new tab to save it to your camera roll.');
-        } else {
-          setError('Unable to open a new tab. Please check your browser settings.');
-        }
-      })
-      .catch((err) => {
-        setError(`An error occurred while generating the image: ${err.message || 'Unknown error'}`);
-      });
-  };
+  
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
@@ -211,14 +197,7 @@ function MemeGenerator() {
             Download Meme
           </button>
 
-          { isMobile() && (
-            <button 
-              onClick={handleSaveToCameraRoll} 
-              className="py-2 mt-2 bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-lg transition duration-200"
-            >
-              Save Image to Camera Roll
-            </button>
-          )}
+         
         </div>
 
         {embedUrl && (
