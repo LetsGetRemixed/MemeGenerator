@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { toBlob, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import Footer from './Footer';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 function MemeGenerator() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [topText, setTopText] = useState('');
   const [bottomText, setBottomText] = useState('');
-  const [textColor, setTextColor] = useState('text-white'); // Default color is white
-  const [highlightColor, setHighlightColor] = useState(''); // Default is no highlight
-  const [topFontSize, setTopFontSize] = useState('text-2xl'); // Default font size for top text is medium
-  const [bottomFontSize, setBottomFontSize] = useState('text-2xl'); // Default font size for bottom text is medium
+  const [textColor, setTextColor] = useState('text-white');
+  const [highlightColor, setHighlightColor] = useState('');
+  const [topFontSize, setTopFontSize] = useState('text-2xl');
+  const [bottomFontSize, setBottomFontSize] = useState('text-2xl');
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
 
   const isMobile = () => {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -43,10 +45,10 @@ function MemeGenerator() {
       })
       .then(response => response.json())
       .then(data => {
-        console.log(data); // Log the response
         if (data.success) {
           setEmbedUrl(data.data.link);
           setError('');
+          setCopySuccess('');
         } else {
           setError(`Failed to upload image. Error: ${data.data.error.message}`);
         }
@@ -60,11 +62,9 @@ function MemeGenerator() {
     toPng(document.getElementById('meme'))
       .then((dataUrl) => {
         if (isMobile()) {
-          // For mobile users
-          setSelectedImage(dataUrl); // Set the image preview to the generated image
+          setSelectedImage(dataUrl);
           setError('Long press the image above to save it to your camera roll.');
         } else {
-          // For desktop users
           saveAs(dataUrl, 'meme.png');
         }
       })
@@ -72,8 +72,6 @@ function MemeGenerator() {
         setError(`An error occurred while downloading the image: ${err.message}`);
       });
   };
-
-  
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
@@ -90,7 +88,7 @@ function MemeGenerator() {
 
   const fontSizes = [
     { size: 'text-xl', label: 'Small' },
-    { size: 'text-2xl', label: 'Medium' }, // Default
+    { size: 'text-2xl', label: 'Medium' },
     { size: 'text-4xl', label: 'Large' },
     { size: 'text-6xl', label: 'Goober' },
   ];
@@ -196,19 +194,30 @@ function MemeGenerator() {
           >
             Download Meme
           </button>
-
-         
         </div>
 
         {embedUrl && (
           <div className="mt-6 p-4 bg-gray-700 rounded-lg shadow-inner">
             <p className="text-center font-semibold">Embed Link:</p>
-            <input 
-              type="text" 
-              value={embedUrl} 
-              readOnly 
-              className="w-full p-2 mt-2 bg-gray-800 rounded text-white border border-gray-600"
-            />
+            <div className="flex items-center mt-2 relative">
+              <input 
+                type="text" 
+                value={embedUrl} 
+                readOnly 
+                className="flex-grow p-2 bg-gray-800 rounded text-white border border-gray-600"
+              />
+              <CopyToClipboard text={embedUrl} onCopy={() => setCopySuccess('Link copied to clipboard!')}>
+                <button 
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 p-2 bg-transparent text-white"
+                  title="Copy to clipboard"
+                >
+                  <i className="fas fa-clipboard"></i>
+                </button>
+              </CopyToClipboard>
+            </div>
+            {copySuccess && (
+              <p className="text-center mt-2 text-green-500">{copySuccess}</p>
+            )}
           </div>
         )}
 
@@ -224,6 +233,7 @@ function MemeGenerator() {
 }
 
 export default MemeGenerator;
+
 
 
 
