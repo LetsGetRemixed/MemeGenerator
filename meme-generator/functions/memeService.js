@@ -1,8 +1,11 @@
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const path = require('path');
 const fs = require('fs');
 
 const IMGUR_CLIENT_ID = '2c1b6d3f1c226c9'; // Replace with your Imgur Client ID
+
+// Register the Impact font
+registerFont(path.join(__dirname, 'fonts', 'Impact.ttf'), { family: 'Impact' });
 
 const getRandomTemplate = () => {
   const templateDirectory = path.join(__dirname, 'templates');
@@ -24,8 +27,8 @@ const createMeme = async (topText, bottomText) => {
   // Draw the base image
   ctx.drawImage(image, 0, 0, width, height);
 
-  // Set up text styles
-  ctx.font = 'bold 30px Arial'; // Use the Impact font
+  // Set up text styles with Impact font
+  ctx.font = 'bold 30px Impact'; // Use the Impact font
   ctx.fillStyle = 'white'; // White text
   ctx.strokeStyle = 'black'; // Black outline
   ctx.lineWidth = 2;
@@ -59,3 +62,4 @@ const uploadToImgur = async (imageBuffer) => {
 };
 
 module.exports = { createMeme, uploadToImgur };
+
