@@ -25,7 +25,7 @@ const createMeme = async (topText, bottomText) => {
   ctx.drawImage(image, 0, 0, width, height);
 
   // Set up text styles
-  ctx.font = 'bold 30px Impact'; // Use the Impact font
+  ctx.font = 'bold 30px Arial'; // Use the Impact font
   ctx.fillStyle = 'white'; // White text
   ctx.strokeStyle = 'black'; // Black outline
   ctx.lineWidth = 2;

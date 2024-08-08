@@ -1,10 +1,16 @@
 const functions = require('firebase-functions');
 const express = require('express');
-const {createMeme, uploadToImgur} = require('./memeService'); 
+const { createMeme, uploadToImgur } = require('./memeService'); 
 const app = express();
 
-// Your Express routes
-app.get('/:topText/:bottomText', async (req, res) => {
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log('Received request for:', req.originalUrl);
+  next();
+});
+
+// Your Express route for generating memes
+app.get('/api/:topText/:bottomText', async (req, res) => {
   const topText = decodeURIComponent(req.params.topText);
   const bottomText = decodeURIComponent(req.params.bottomText);
 
@@ -17,12 +23,19 @@ app.get('/:topText/:bottomText', async (req, res) => {
     if (imgurResponse.success) {
       res.redirect(imgurResponse.data.link);
     } else {
+      console.error('Failed to upload image to Imgur:', imgurResponse.data.error);
       res.status(500).send('Failed to upload image to Imgur');
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error generating meme:', error);
     res.status(500).send('An error occurred while generating the meme');
   }
+});
+
+// Fallback route for catching unmatched routes
+app.use((req, res) => {
+  console.log('No matching route for:', req.originalUrl);
+  res.status(404).send('Route not found');
 });
 
 // Export the Express app as a Firebase Function
