@@ -8,9 +8,8 @@ app.get('/:topText/:bottomText', async (req, res) => {
   const topText = decodeURIComponent(req.params.topText);
   const bottomText = decodeURIComponent(req.params.bottomText);
 
-  // Debugging: log the received text
-  console.log('Top Text:', topText);
-  console.log('Bottom Text:', bottomText);
+  console.log('Received topText:', topText);
+  console.log('Received bottomText:', bottomText);
 
   try {
     const memeImageBuffer = await createMeme(topText, bottomText);
