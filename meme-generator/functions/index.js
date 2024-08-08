@@ -5,12 +5,16 @@ const app = express();
 
 // Your Express routes
 app.get('/:topText/:bottomText', async (req, res) => {
-  const { topText, bottomText } = req.params;
+  const topText = decodeURIComponent(req.params.topText);
+  const bottomText = decodeURIComponent(req.params.bottomText);
+
+  // Debugging: log the received text
+  console.log('Top Text:', topText);
+  console.log('Bottom Text:', bottomText);
 
   try {
     const memeImageBuffer = await createMeme(topText, bottomText);
     const imgurResponse = await uploadToImgur(memeImageBuffer);
-
     if (imgurResponse.success) {
       res.redirect(imgurResponse.data.link);
     } else {
