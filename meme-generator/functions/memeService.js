@@ -5,7 +5,7 @@ const fs = require('fs');
 const IMGUR_CLIENT_ID = '2c1b6d3f1c226c9'; // Replace with your Imgur Client ID
 
 // Register the Impact font
-registerFont(path.join(__dirname, 'fonts', 'Impact.ttf'), { family: 'Impact' });
+registerFont(path.join(__dirname, 'fonts', 'impact.ttf'), { family: 'Impact' });
 
 const getRandomTemplate = () => {
   const templateDirectory = path.join(__dirname, 'templates');
