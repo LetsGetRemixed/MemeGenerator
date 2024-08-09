@@ -18,6 +18,7 @@ function MemeGenerator() {
   const [copySuccess, setCopySuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false); // State for loading animation
   const [loadingDots, setLoadingDots] = useState(1); // State to manage loading dots
+  const [isInfoVisible, setIsInfoVisible] = useState(false);
 
   const resetToDefault = () => {
     setTopText('');
@@ -143,10 +144,32 @@ function MemeGenerator() {
     // Adds letter spacing
   };
 
+  const toggleInfoVisibility = () => {
+    setIsInfoVisible(!isInfoVisible);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-12 flex flex-col items-center justify-center">
       <h1 className="text-center text-4xl font-extrabold mb-8">Colby's Meme Generator</h1>
-      <p className="text-center text-sm text-gray-400 mb-8">Create your meme below, and click download to download as a file / save to camera roll, and click Generate Meme to receive an embeded link for your meme. This website also allows the user to "/api/toptext/bottomtext" after the link to generate a random meme with their text. You can call this to places like discord for an instant meme. Spaces = %20</p>
+      {isMobile() ? (
+        <>
+          <button
+            onClick={toggleInfoVisibility}
+            className="text-center text-sm text-blue-500 mb-8"
+          >
+            {isInfoVisible ? 'Less info...' : 'More info...'}
+          </button>
+          {isInfoVisible && (
+            <p className="text-center text-sm text-gray-400 mb-8">
+              Create your meme below, and click download to download as a file / save to camera roll, and click Generate Meme to receive an embeded link for your meme. This website also allows the user to "/api/toptext/bottomtext" after the link to generate a random meme with their text. You can call this to places like discord for an instant meme. Spaces = %20
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-center text-sm text-gray-400 mb-8">
+          Create your meme below, and click download to download as a file / save to camera roll, and click Generate Meme to receive an embeded link for your meme. This website also allows the user to "/api/toptext/bottomtext" after the link to generate a random meme with their text. You can call this to places like discord for an instant meme. Spaces = %20
+        </p>
+      )}
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
         <input 
           type="file" 
