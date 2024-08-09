@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toBlob, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import Footer from './Footer';
@@ -15,6 +15,17 @@ function MemeGenerator() {
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // State for loading animation
+  const [loadingDots, setLoadingDots] = useState(1); // State to manage loading dots
+
+  useEffect(() => {
+    if (isLoading) {
+      const interval = setInterval(() => {
+        setLoadingDots((prev) => (prev % 3) + 1);
+      }, 500); // Update dots every 500ms
+      return () => clearInterval(interval);
+    }
+  }, [isLoading]);
 
   const isMobile = () => {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -59,6 +70,7 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
+    setIsLoading(true); // Start the loading animation
     const imgElement = document.querySelector('#meme img');
     if (imgElement.complete) {
       generateImage();
@@ -76,9 +88,11 @@ function MemeGenerator() {
         } else {
           saveAs(dataUrl, 'meme.png');
         }
+        setIsLoading(false); // Stop the loading animation
       })
       .catch((err) => {
         setError(`An error occurred while downloading the image: ${err.message}`);
+        setIsLoading(false); // Stop the loading animation
       });
   };
 
@@ -203,6 +217,12 @@ function MemeGenerator() {
           >
             Download Meme
           </button>
+
+          {isLoading && (
+            <div className="text-center mt-4 text-white">
+              Image is preparing for download{".".repeat(loadingDots)}
+            </div>
+          )}
         </div>
 
         {embedUrl && (
@@ -242,6 +262,7 @@ function MemeGenerator() {
 }
 
 export default MemeGenerator;
+
 
 
 
