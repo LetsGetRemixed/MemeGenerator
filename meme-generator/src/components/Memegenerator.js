@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { toBlob, toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import Footer from './Footer';
@@ -15,50 +15,17 @@ function MemeGenerator() {
   const [embedUrl, setEmbedUrl] = useState('');
   const [error, setError] = useState('');
   const [copySuccess, setCopySuccess] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // State for loading animation
-  const [loadingDots, setLoadingDots] = useState(1); // State to manage loading dots
-  
-
-  useEffect(() => {
-    if (isLoading) {
-      const interval = setInterval(() => {
-        setLoadingDots((prev) => (prev % 3) + 1);
-      }, 500); // Update dots every 500ms
-      return () => clearInterval(interval);
-    }
-  }, [isLoading]);
 
   const isMobile = () => {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   };
 
   const handleImageUpload = (e) => {
-    // Remove the previous image from the DOM
-    const memeElement = document.getElementById('meme');
-while (memeElement.firstChild) {
-    memeElement.removeChild(memeElement.firstChild);
-}
-  
-    // Reset all states
-    setSelectedImage(null);
-    setTopText('');
-    setBottomText('');
-    setTextColor('text-white');
-    setHighlightColor('');
-    setTopFontSize('text-2xl');
-    setBottomFontSize('text-2xl');
-    setEmbedUrl('');
-    setError('');
-    setCopySuccess('');
-    setIsLoading(false);
-  
-    // Load the new image
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSelectedImage(null); // Clear previous image
-      setSelectedImage(`${reader.result}?${new Date().getTime()}`);
-  };
+      setSelectedImage(reader.result);
+    };
     reader.readAsDataURL(file);
   };
 
@@ -92,32 +59,28 @@ while (memeElement.firstChild) {
   };
 
   const handleDownloadMeme = () => {
-    setIsLoading(true); // Start the loading animation
     const imgElement = document.querySelector('#meme img');
     if (imgElement.complete) {
-        generateImage();
+      generateImage();
     } else {
-        imgElement.onload = generateImage;
-        imgElement.onerror = () => setError('Failed to load the image.');
+      imgElement.onload = generateImage;
     }
-};
+  };
 
-const generateImage = () => {
-  toPng(document.getElementById('meme'))
+  const generateImage = () => {
+    toPng(document.getElementById('meme'))
       .then((dataUrl) => {
-          if (isMobile()) {
-              // Directly use the generated dataUrl instead of setting selectedImage
-              setError('Long press the image above to save it to your camera roll.');
-          } else {
-              saveAs(dataUrl, 'meme.png');
-          }
-          setIsLoading(false); // Stop the loading animation
+        if (isMobile()) {
+          setSelectedImage(dataUrl);
+          setError('Long press the image above to save it to your camera roll.');
+        } else {
+          saveAs(dataUrl, 'meme.png');
+        }
       })
       .catch((err) => {
-          setError(`An error occurred while downloading the image: ${err.message}`);
-          setIsLoading(false); // Stop the loading animation
+        setError(`An error occurred while downloading the image: ${err.message}`);
       });
-};
+  };
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
@@ -154,7 +117,7 @@ const generateImage = () => {
         />
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
-            <img src={selectedImage} alt="meme" key={selectedImage} className="object-cover w-full h-full rounded-lg" />
+            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
             <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize} ${getTextShadow()}`}>{topText}</p>
             <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize} ${getTextShadow()}`}>{bottomText}</p>
           </div>
@@ -240,12 +203,6 @@ const generateImage = () => {
           >
             Download Meme
           </button>
-
-          {isLoading && (
-            <div className="text-center mt-4 text-white">
-              Image is preparing for download{".".repeat(loadingDots)}
-            </div>
-          )}
         </div>
 
         {embedUrl && (
