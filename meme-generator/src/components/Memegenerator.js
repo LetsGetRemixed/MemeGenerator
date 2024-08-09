@@ -32,14 +32,24 @@ function MemeGenerator() {
   };
 
   useEffect(() => {
+    // Load Impact font
+    const font = new FontFace('Impact', 'url(./impacted.ttf)');
+    font.load().then(() => {
+      document.fonts.add(font);
+    });
+  
+    // Handle loading dots animation
     if (isLoading) {
       const interval = setInterval(() => {
         setLoadingDots((prev) => (prev % 3) + 1);
       }, 500); // Update dots every 500ms
+  
+      // Cleanup interval on unmount or when isLoading changes
       return () => clearInterval(interval);
     }
   }, [isLoading]);
-
+  
+  // isMobile function remains the same
   const isMobile = () => {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   };
@@ -127,11 +137,16 @@ function MemeGenerator() {
     { size: 'text-6xl', label: 'Goober' },
   ];
 
-  
+  const textStyle = {
+    fontFamily: 'Impact, Arial, sans-serif',
+    WebkitTextStroke: '.5px black',    // Adds a black stroke around the text  
+    // Adds letter spacing
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-12 flex flex-col items-center justify-center">
-      <h1 className="text-center text-4xl font-extrabold mb-8">Meme Generator</h1>
+      <h1 className="text-center text-4xl font-extrabold mb-8">Colby's Meme Generator</h1>
+      <p className="text-center text-sm text-gray-400 mb-8">Create your meme below, and click download to download as a file / save to camera roll, and click Generate Meme to receive an embeded link for your meme. This website also allows the user to "/api/toptext/bottomtext" after the link to generate a random meme with their text. You can call this to places like discord for an instant meme. Spaces = %20</p>
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
         <input 
           type="file" 
@@ -141,8 +156,8 @@ function MemeGenerator() {
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
             <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
-            <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize}`}>{topText}</p>
-            <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize}`}>{bottomText}</p>
+            <p className={`absolute top-2 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${topFontSize}`} style={textStyle}>{topText}</p>
+            <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${bottomFontSize}`} style={textStyle}>{bottomText}</p>
           </div>
         )}
         <input
@@ -217,7 +232,7 @@ function MemeGenerator() {
             onClick={handleGenerateMeme} 
             className="py-2 mb-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition duration-200"
           >
-            Generate Meme
+            Generate Meme Link
           </button>
 
           <button 
