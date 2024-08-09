@@ -19,6 +19,18 @@ function MemeGenerator() {
   const [isLoading, setIsLoading] = useState(false); // State for loading animation
   const [loadingDots, setLoadingDots] = useState(1); // State to manage loading dots
 
+  const resetToDefault = () => {
+    setTopText('');
+    setBottomText('');
+    setTextColor('text-white');
+    setHighlightColor('');
+    setTopFontSize('text-2xl');
+    setBottomFontSize('text-2xl');
+    setEmbedUrl('');
+    setError('');
+    setCopySuccess('');
+  };
+
   useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
@@ -37,6 +49,7 @@ function MemeGenerator() {
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result);
+      resetToDefault(); // Reset everything to default
     };
     reader.readAsDataURL(file);
   };
@@ -71,13 +84,23 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
-    setIsLoading(true); // Start the loading animation
-    const imgElement = document.querySelector('#meme img');
-    if (imgElement.complete) {
-      generateImage();
-    } else {
-      imgElement.onload = generateImage;
-    }
+    setIsLoading(true); 
+    html2canvas(document.getElementById('meme'), { scale: 1 })
+      .then((canvas) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        if (isMobile()) {
+          setSelectedImage(dataUrl);
+          setError('Long press the image above to save it to your camera roll.');
+        } else {
+          saveAs(dataUrl, 'meme.png');
+        }
+        resetToDefault(); // Reset everything except the image
+        setIsLoading(false); 
+      })
+      .catch((err) => {
+        setError(`An error occurred while downloading the image: ${err.message}`);
+        setIsLoading(false); 
+      });
   };
 
   const generateImage = () => {
