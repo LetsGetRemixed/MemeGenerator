@@ -101,7 +101,17 @@ function MemeGenerator() {
   };
 
   const generateImage = () => {
-    html2canvas(document.getElementById('meme'), { scale: 1 })
+    const memeElement = document.getElementById('meme');
+    const { width, height } = memeElement.getBoundingClientRect();
+  
+    html2canvas(memeElement, {
+      scale: 1,
+      width: width,
+      height: height, // Use exact height of the element
+      windowWidth: document.documentElement.offsetWidth,
+      windowHeight: document.documentElement.offsetHeight,
+      useCORS: true,
+    })
       .then((canvas) => {
         const dataUrl = canvas.toDataURL('image/png');
         if (isMobile()) {
@@ -114,10 +124,9 @@ function MemeGenerator() {
       })
       .catch((err) => {
         setError(`An error occurred while downloading the image: ${err.message}`);
-        setIsLoading(false); 
+        setIsLoading(false);
       });
   };
-
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
     { color: 'text-black', label: 'Black', bgClass: 'bg-black' },
@@ -176,13 +185,15 @@ function MemeGenerator() {
           onChange={handleImageUpload} 
           className="my-4 w-full p-2 bg-gray-700 rounded text-white border border-gray-600" 
         />
-        {selectedImage && (
-          <div id="meme" className="relative w-full h-64 mb-4">
-            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
-            <p className={`absolute top-2 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${topFontSize}`} style={textStyle}>{topText}</p>
-            <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${bottomFontSize}`} style={textStyle}>{bottomText}</p>
-          </div>
-        )}
+       {selectedImage && (
+  <div id="meme" className="relative w-full mb-4">
+    <div className="relative w-full">
+      <img src={selectedImage} alt="meme" className="object-cover w-full rounded-lg" style={{ height: 'auto' }} />
+      <p className={`absolute top-0 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${topFontSize}`} style={textStyle}>{topText}</p>
+      <p className={`absolute bottom-8 left-0 right-0 text-center font-extrabold ${textColor} ${highlightColor} ${bottomFontSize}`} style={textStyle}>{bottomText}</p>
+    </div>
+  </div>
+)}
         <input
           type="text"
           placeholder="Top Text"
