@@ -59,20 +59,27 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
-    requestAnimationFrame(() => {
-      toPng(document.getElementById('meme'))
-        .then((dataUrl) => {
-          if (isMobile()) {
-            setSelectedImage(dataUrl);
-            setError('Long press the image above to save it to your camera roll.');
-          } else {
-            saveAs(dataUrl, 'meme.png');
-          }
-        })
-        .catch((err) => {
-          setError(`An error occurred while downloading the image: ${err.message}`);
-        });
-    });
+    const imgElement = document.querySelector('#meme img');
+    if (imgElement.complete) {
+      generateImage();
+    } else {
+      imgElement.onload = generateImage;
+    }
+  };
+
+  const generateImage = () => {
+    toPng(document.getElementById('meme'))
+      .then((dataUrl) => {
+        if (isMobile()) {
+          setSelectedImage(dataUrl);
+          setError('Long press the image above to save it to your camera roll.');
+        } else {
+          saveAs(dataUrl, 'meme.png');
+        }
+      })
+      .catch((err) => {
+        setError(`An error occurred while downloading the image: ${err.message}`);
+      });
   };
 
   const textColors = [
