@@ -116,9 +116,7 @@ function MemeGenerator() {
     { size: 'text-6xl', label: 'Goober' },
   ];
 
-  const getTextShadow = () => {
-    return textColor === 'text-black' ? '' : 'font-outline-2';
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-12 flex flex-col items-center justify-center">
@@ -132,8 +130,8 @@ function MemeGenerator() {
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
             <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
-            <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize} ${getTextShadow()}`}>{topText}</p>
-            <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize} ${getTextShadow()}`}>{bottomText}</p>
+            <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize}`}>{topText}</p>
+            <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize}`}>{bottomText}</p>
           </div>
         )}
         <input
