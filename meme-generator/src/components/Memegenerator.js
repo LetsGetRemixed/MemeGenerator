@@ -32,6 +32,12 @@ function MemeGenerator() {
   };
 
   const handleImageUpload = (e) => {
+    // Remove the previous image from the DOM
+    const memeElement = document.getElementById('meme');
+    if (memeElement) {
+      memeElement.innerHTML = ''; // Clear the contents
+    }
+  
     // Reset all states
     setSelectedImage(null);
     setTopText('');
@@ -44,7 +50,7 @@ function MemeGenerator() {
     setError('');
     setCopySuccess('');
     setIsLoading(false);
-
+  
     // Load the new image
     const file = e.target.files[0];
     const reader = new FileReader();
