@@ -34,9 +34,9 @@ function MemeGenerator() {
   const handleImageUpload = (e) => {
     // Remove the previous image from the DOM
     const memeElement = document.getElementById('meme');
-    if (memeElement) {
-      memeElement.innerHTML = ''; // Clear the contents
-    }
+while (memeElement.firstChild) {
+    memeElement.removeChild(memeElement.firstChild);
+}
   
     // Reset all states
     setSelectedImage(null);
@@ -55,8 +55,9 @@ function MemeGenerator() {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSelectedImage(reader.result);
-    };
+      setSelectedImage(null); // Clear previous image
+      setSelectedImage(`${reader.result}?${new Date().getTime()}`);
+  };
     reader.readAsDataURL(file);
   };
 
@@ -151,7 +152,7 @@ function MemeGenerator() {
         />
         {selectedImage && (
           <div id="meme" className="relative w-full h-64 mb-4">
-            <img src={selectedImage} alt="meme" className="object-cover w-full h-full rounded-lg" />
+            <img src={selectedImage} alt="meme" key={selectedImage} className="object-cover w-full h-full rounded-lg" />
             <p className={`absolute top-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${topFontSize} ${getTextShadow()}`}>{topText}</p>
             <p className={`absolute bottom-2 left-0 right-0 text-center font-extrabold drop-shadow-lg ${textColor} ${highlightColor} ${bottomFontSize} ${getTextShadow()}`}>{bottomText}</p>
           </div>
