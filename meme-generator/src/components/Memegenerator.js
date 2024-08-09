@@ -59,7 +59,16 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
-    toPng(document.getElementById('meme'))
+    const memeElement = document.getElementById('meme');
+    const offScreenCanvas = document.createElement('canvas');
+    const offScreenContext = offScreenCanvas.getContext('2d');
+    const { width, height } = memeElement.getBoundingClientRect();
+    
+    offScreenCanvas.width = width;
+    offScreenCanvas.height = height;
+    offScreenContext.drawImage(memeElement, 0, 0, width, height);
+    
+    toPng(offScreenCanvas)
       .then((dataUrl) => {
         if (isMobile()) {
           setSelectedImage(dataUrl);
