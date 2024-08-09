@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { toBlob, toPng } from 'html-to-image';
+import { toBlob } from 'html-to-image';
 import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
 import Footer from './Footer';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -80,26 +81,21 @@ function MemeGenerator() {
   };
 
   const generateImage = () => {
-    const memeElement = document.getElementById('meme');
-    const { width, height } = memeElement.getBoundingClientRect();
-  
-    toPng(memeElement, {
-      width: width,
-      height: height,
-    })
-    .then((dataUrl) => {
-      if (isMobile()) {
-        setSelectedImage(dataUrl);
-        setError('Long press the image above to save it to your camera roll.');
-      } else {
-        saveAs(dataUrl, 'meme.png');
-      }
-      setIsLoading(false); // Stop the loading animation
-    })
-    .catch((err) => {
-      setError(`An error occurred while downloading the image: ${err.message}`);
-      setIsLoading(false); // Stop the loading animation
-    });
+    html2canvas(document.getElementById('meme'), { scale: 1 })
+      .then((canvas) => {
+        const dataUrl = canvas.toDataURL('image/png');
+        if (isMobile()) {
+          setSelectedImage(dataUrl);
+          setError('Long press the image above to save it to your camera roll.');
+        } else {
+          saveAs(dataUrl, 'meme.png');
+        }
+        setIsLoading(false); // Stop the loading animation
+      })
+      .catch((err) => {
+        setError(`An error occurred while downloading the image: ${err.message}`);
+        setIsLoading(false); // Stop the loading animation
+      });
   };
 
   const textColors = [
