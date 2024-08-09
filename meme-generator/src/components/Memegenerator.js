@@ -59,27 +59,20 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
-    const memeElement = document.getElementById('meme');
-    const offScreenCanvas = document.createElement('canvas');
-    const offScreenContext = offScreenCanvas.getContext('2d');
-    const { width, height } = memeElement.getBoundingClientRect();
-    
-    offScreenCanvas.width = width;
-    offScreenCanvas.height = height;
-    offScreenContext.drawImage(memeElement, 0, 0, width, height);
-    
-    toPng(offScreenCanvas)
-      .then((dataUrl) => {
-        if (isMobile()) {
-          setSelectedImage(dataUrl);
-          setError('Long press the image above to save it to your camera roll.');
-        } else {
-          saveAs(dataUrl, 'meme.png');
-        }
-      })
-      .catch((err) => {
-        setError(`An error occurred while downloading the image: ${err.message}`);
-      });
+    setTimeout(() => {
+      toPng(document.getElementById('meme'))
+        .then((dataUrl) => {
+          if (isMobile()) {
+            setSelectedImage(dataUrl);
+            setError('Long press the image above to save it to your camera roll.');
+          } else {
+            saveAs(dataUrl, 'meme.png');
+          }
+        })
+        .catch((err) => {
+          setError(`An error occurred while downloading the image: ${err.message}`);
+        });
+    }, 500); // 500ms delay before processing the image
   };
 
   const textColors = [
