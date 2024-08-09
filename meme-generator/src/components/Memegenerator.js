@@ -59,7 +59,7 @@ function MemeGenerator() {
   };
 
   const handleDownloadMeme = () => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       toPng(document.getElementById('meme'))
         .then((dataUrl) => {
           if (isMobile()) {
@@ -72,7 +72,7 @@ function MemeGenerator() {
         .catch((err) => {
           setError(`An error occurred while downloading the image: ${err.message}`);
         });
-    }, 500); // 500ms delay before processing the image
+    });
   };
 
   const textColors = [
