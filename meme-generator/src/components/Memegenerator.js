@@ -32,10 +32,23 @@ function MemeGenerator() {
   };
 
   const handleImageUpload = (e) => {
+    // Reset all states
+    setSelectedImage(null);
+    setTopText('');
+    setBottomText('');
+    setTextColor('text-white');
+    setHighlightColor('');
+    setTopFontSize('text-2xl');
+    setBottomFontSize('text-2xl');
+    setEmbedUrl('');
+    setError('');
+    setCopySuccess('');
+    setIsLoading(false);
+
+    // Load the new image
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSelectedImage(null); // Clear the previous image
       setSelectedImage(reader.result);
     };
     reader.readAsDataURL(file);
@@ -73,7 +86,7 @@ function MemeGenerator() {
   const handleDownloadMeme = () => {
     setIsLoading(true); // Start the loading animation
     const imgElement = document.querySelector('#meme img');
-    if (imgElement.complete && imgElement.naturalWidth > 0) {
+    if (imgElement.complete) {
       generateImage();
     } else {
       imgElement.onload = generateImage;
@@ -90,7 +103,6 @@ function MemeGenerator() {
           saveAs(dataUrl, 'meme.png');
         }
         setIsLoading(false); // Stop the loading animation
-        setEmbedUrl(''); // Reset the embed URL
       })
       .catch((err) => {
         setError(`An error occurred while downloading the image: ${err.message}`);
@@ -264,6 +276,7 @@ function MemeGenerator() {
 }
 
 export default MemeGenerator;
+
 
 
 
