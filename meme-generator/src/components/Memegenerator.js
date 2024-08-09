@@ -80,20 +80,26 @@ function MemeGenerator() {
   };
 
   const generateImage = () => {
-    toPng(document.getElementById('meme'))
-      .then((dataUrl) => {
-        if (isMobile()) {
-          setSelectedImage(dataUrl);
-          setError('Long press the image above to save it to your camera roll.');
-        } else {
-          saveAs(dataUrl, 'meme.png');
-        }
-        setIsLoading(false); // Stop the loading animation
-      })
-      .catch((err) => {
-        setError(`An error occurred while downloading the image: ${err.message}`);
-        setIsLoading(false); // Stop the loading animation
-      });
+    const memeElement = document.getElementById('meme');
+    const { width, height } = memeElement.getBoundingClientRect();
+  
+    toPng(memeElement, {
+      width: width,
+      height: height,
+    })
+    .then((dataUrl) => {
+      if (isMobile()) {
+        setSelectedImage(dataUrl);
+        setError('Long press the image above to save it to your camera roll.');
+      } else {
+        saveAs(dataUrl, 'meme.png');
+      }
+      setIsLoading(false); // Stop the loading animation
+    })
+    .catch((err) => {
+      setError(`An error occurred while downloading the image: ${err.message}`);
+      setIsLoading(false); // Stop the loading animation
+    });
   };
 
   const textColors = [
