@@ -17,6 +17,7 @@ function MemeGenerator() {
   const [copySuccess, setCopySuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false); // State for loading animation
   const [loadingDots, setLoadingDots] = useState(1); // State to manage loading dots
+  
 
   useEffect(() => {
     if (isLoading) {
@@ -94,28 +95,29 @@ while (memeElement.firstChild) {
     setIsLoading(true); // Start the loading animation
     const imgElement = document.querySelector('#meme img');
     if (imgElement.complete) {
-      generateImage();
+        generateImage();
     } else {
-      imgElement.onload = generateImage;
+        imgElement.onload = generateImage;
+        imgElement.onerror = () => setError('Failed to load the image.');
     }
-  };
+};
 
-  const generateImage = () => {
-    toPng(document.getElementById('meme'))
+const generateImage = () => {
+  toPng(document.getElementById('meme'))
       .then((dataUrl) => {
-        if (isMobile()) {
-          setSelectedImage(dataUrl);
-          setError('Long press the image above to save it to your camera roll.');
-        } else {
-          saveAs(dataUrl, 'meme.png');
-        }
-        setIsLoading(false); // Stop the loading animation
+          if (isMobile()) {
+              // Directly use the generated dataUrl instead of setting selectedImage
+              setError('Long press the image above to save it to your camera roll.');
+          } else {
+              saveAs(dataUrl, 'meme.png');
+          }
+          setIsLoading(false); // Stop the loading animation
       })
       .catch((err) => {
-        setError(`An error occurred while downloading the image: ${err.message}`);
-        setIsLoading(false); // Stop the loading animation
+          setError(`An error occurred while downloading the image: ${err.message}`);
+          setIsLoading(false); // Stop the loading animation
       });
-  };
+};
 
   const textColors = [
     { color: 'text-white', label: 'White', bgClass: 'bg-white' },
