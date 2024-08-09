@@ -85,22 +85,8 @@ function MemeGenerator() {
 
   const handleDownloadMeme = () => {
     setIsLoading(true); 
-    html2canvas(document.getElementById('meme'), { scale: 1 })
-      .then((canvas) => {
-        const dataUrl = canvas.toDataURL('image/png');
-        if (isMobile()) {
-          setSelectedImage(dataUrl);
-          setError('Long press the image above to save it to your camera roll.');
-        } else {
-          saveAs(dataUrl, 'meme.png');
-        }
-        resetToDefault(); // Reset everything except the image
-        setIsLoading(false); 
-      })
-      .catch((err) => {
-        setError(`An error occurred while downloading the image: ${err.message}`);
-        setIsLoading(false); 
-      });
+    generateImage(); // Generate the image
+    resetToDefault(); // Reset everything except the image
   };
 
   const generateImage = () => {
@@ -113,11 +99,11 @@ function MemeGenerator() {
         } else {
           saveAs(dataUrl, 'meme.png');
         }
-        setIsLoading(false); // Stop the loading animation
+        setIsLoading(false);
       })
       .catch((err) => {
         setError(`An error occurred while downloading the image: ${err.message}`);
-        setIsLoading(false); // Stop the loading animation
+        setIsLoading(false); 
       });
   };
 
